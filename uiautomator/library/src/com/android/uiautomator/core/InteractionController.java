@@ -70,6 +70,8 @@ class InteractionController {
 
     private final long mLongPressTimeout;
 
+    private static final long REGULAR_CLICK_LENGTH = 100;
+
     private long mDownTime;
 
     public InteractionController(UiAutomatorBridge bridge) {
@@ -133,12 +135,11 @@ class InteractionController {
     }
 
     public boolean click(int x, int y) {
-        if (DEBUG) {
-            Log.d(LOG_TAG, "tap (" + x + ", " + y + ")");
-        }
+        Log.d(LOG_TAG, "click (" + x + ", " + y + ")");
 
         mUiAutomatorBridge.setOperationTime();
         if (touchDown(x, y)) {
+            SystemClock.sleep(REGULAR_CLICK_LENGTH);
             if(touchUp(x, y)) {
                 return true;
             }
@@ -148,13 +149,15 @@ class InteractionController {
 
     public boolean clickAndWaitForNewWindow(final int x, final int y, long timeout) {
         if (DEBUG) {
-            Log.d(LOG_TAG, "tap (" + x + ", " + y + ")");
+            Log.d(LOG_TAG, "click (" + x + ", " + y + ")");
         }
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                touchDown(x, y);
-                touchUp(x, y);
+                if(touchDown(x, y)) {
+                    SystemClock.sleep(REGULAR_CLICK_LENGTH);
+                    touchUp(x, y);
+                }
             }
         };
         Predicate<AccessibilityEvent> predicate = new Predicate<AccessibilityEvent>() {

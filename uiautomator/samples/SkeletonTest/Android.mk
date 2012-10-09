@@ -1,4 +1,4 @@
-# Copyright (C) 2012 The Android Open Source Project
+#Copyright (C) 2012 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+local_target_dir := $(TARGET_OUT_DATA)/local/tmp
 LOCAL_PATH := $(call my-dir)
+
 include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_PREBUILT_EXECUTABLES := uiautomatorviewer
-include $(BUILD_HOST_PREBUILT)
+LOCAL_MODULE := uiautomator.skeletontest
+
+LOCAL_JAVA_LIBRARIES := uiautomator.core
+
+LOCAL_MODULE_PATH := $(local_target_dir)
+
+include $(BUILD_JAVA_LIBRARY)
