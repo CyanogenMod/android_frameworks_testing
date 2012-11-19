@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.test;
 
-package com.android.testing.dummyime;
-
-import android.inputmethodservice.InputMethodService;
+import android.content.Context;
+import android.test.AndroidTestCase;
 
 /**
- * Dummy IME implementation that basically does nothing
+ * Placeholder test to verify {@link Context} gets injected to {@link AndroidTestCase}.
  */
-public class DummyIme extends InputMethodService {
+public class MyAndroidTestCase extends AndroidTestCase {
 
-    @Override
-    public boolean onEvaluateFullscreenMode() {
-        return false;
-    }
-
-    @Override
-    public boolean onEvaluateInputViewShown() {
-        return false;
-    }
+    // rely on testCaseSetupProperly to test for context
 }

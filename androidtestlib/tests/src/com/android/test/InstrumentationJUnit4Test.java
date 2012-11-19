@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.test;
 
-package com.android.testing.dummyime;
+import android.app.Instrumentation;
+import android.util.Log;
 
-import android.inputmethodservice.InputMethodService;
+import junit.framework.Assert;
+
+import org.junit.Test;
 
 /**
- * Dummy IME implementation that basically does nothing
+ * Placeholder test to verify {@link InjectInstrumentation}.
  */
-public class DummyIme extends InputMethodService {
+public class InstrumentationJUnit4Test {
 
-    @Override
-    public boolean onEvaluateFullscreenMode() {
-        return false;
+    @InjectInstrumentation
+    public Instrumentation mInstrumentation;
+
+    public InstrumentationJUnit4Test() {
+        Log.d("InstrumentationJUnit4Test", "I'm created");
     }
 
-    @Override
-    public boolean onEvaluateInputViewShown() {
-        return false;
+    @Test
+    public void verifyInstrumentationInjected() {
+        Assert.assertNotNull(mInstrumentation);
     }
 }

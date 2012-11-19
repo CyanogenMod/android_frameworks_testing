@@ -13,23 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.test.runner.junit3;
 
-package com.android.testing.dummyime;
-
-import android.inputmethodservice.InputMethodService;
+import junit.framework.TestCase;
+import junit.framework.TestResult;
 
 /**
- * Dummy IME implementation that basically does nothing
+ * A benign test result that does no actually test execution, just runs
+ * through the motions
+ *
  */
-public class DummyIme extends InputMethodService {
+class NoExecTestResult extends TestResult {
 
+    /**
+     * Override parent to just inform listeners of test,
+     * and skip test execution.
+     */
     @Override
-    public boolean onEvaluateFullscreenMode() {
-        return false;
+    protected void run(final TestCase test) {
+        startTest(test);
+        endTest(test);
     }
 
-    @Override
-    public boolean onEvaluateInputViewShown() {
-        return false;
-    }
 }

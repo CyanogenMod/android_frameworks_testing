@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.test;
 
-package com.android.testing.dummyime;
-
-import android.inputmethodservice.InputMethodService;
+import android.app.Instrumentation;
+import android.test.InstrumentationTestCase;
+import android.util.Log;
 
 /**
- * Dummy IME implementation that basically does nothing
+ * Placeholder test to verify {@link Instrumentation} gets injected to
+ * {@link InstrumentationTestCase}.
  */
-public class DummyIme extends InputMethodService {
+public class MyInstrumentationTestCase extends InstrumentationTestCase {
 
-    @Override
-    public boolean onEvaluateFullscreenMode() {
-        return false;
+    public MyInstrumentationTestCase() {
+        Log.i("MyInstrumentationTestCase", "I'm created");
     }
 
-    @Override
-    public boolean onEvaluateInputViewShown() {
-        return false;
+    public void testInstrumentationInjected() {
+        assertNotNull("instrumentation was not injected", getInstrumentation());
     }
 }
