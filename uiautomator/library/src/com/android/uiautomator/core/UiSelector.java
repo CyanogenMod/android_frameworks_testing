@@ -26,6 +26,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
  * selected, enabled, checked etc. Additionally UiSelector allows targeting of UI
  * elements within a specific display hierarchies to distinguish similar elements
  * based in the hierarchies they're in.
+ * @since API Level 16
  */
 public class UiSelector {
     static final int SELECTOR_NIL = 0;
@@ -60,6 +61,9 @@ public class UiSelector {
 
     private SparseArray<Object> mSelectorAttributes = new SparseArray<Object>();
 
+    /**
+     * @since API Level 16
+     */
     public UiSelector() {
     }
 
@@ -67,6 +71,9 @@ public class UiSelector {
         mSelectorAttributes = selector.cloneSelector().mSelectorAttributes;
     }
 
+    /**
+     * @since API Level 17
+     */
     protected UiSelector cloneSelector() {
         UiSelector ret = new UiSelector();
         ret.mSelectorAttributes = mSelectorAttributes.clone();
@@ -101,6 +108,7 @@ public class UiSelector {
      *
      * @param text Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector text(String text) {
         return buildSelector(SELECTOR_TEXT, text);
@@ -113,8 +121,9 @@ public class UiSelector {
      * The text for the widget must match exactly
      * with the string in your input argument.
      *
-     * @param regular expression
+     * @param regex a regular expression
      * @return UiSelector with the specified search criteria
+     * @since API Level 17
      */
     public UiSelector textMatches(String regex) {
         return buildSelector(SELECTOR_TEXT_REGEX, regex);
@@ -130,6 +139,7 @@ public class UiSelector {
      *
      * @param text
      * @return UiSelector with this added search criterion
+     * @since API Level 16
      */
     public UiSelector textStartsWith(String text) {
         return buildSelector(SELECTOR_START_TEXT, text);
@@ -144,6 +154,7 @@ public class UiSelector {
      *
      * @param text Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector textContains(String text) {
         return buildSelector(SELECTOR_CONTAINS_TEXT, text);
@@ -155,6 +166,7 @@ public class UiSelector {
      *
      * @param className Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector className(String className) {
         return buildSelector(SELECTOR_CLASS, className);
@@ -164,8 +176,9 @@ public class UiSelector {
      * Set the search criteria to match the class property
      * for a widget (for example, "android.widget.Button").
      *
-     * @param regular expression
+     * @param regex a regular expression
      * @return UiSelector with the specified search criteria
+     * @since API Level 17
      */
     public UiSelector classNameMatches(String regex) {
         return buildSelector(SELECTOR_CLASS_REGEX, regex);
@@ -175,8 +188,9 @@ public class UiSelector {
      * Set the search criteria to match the class property
      * for a widget (for example, "android.widget.Button").
      *
-     * @param class type
+     * @param type type
      * @return UiSelector with the specified search criteria
+     * @since API Level 17
      */
     public <T> UiSelector className(Class<T> type) {
         return buildSelector(SELECTOR_CLASS, type.getName());
@@ -197,6 +211,7 @@ public class UiSelector {
      *
      * @param desc Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector description(String desc) {
         return buildSelector(SELECTOR_DESCRIPTION, desc);
@@ -213,8 +228,9 @@ public class UiSelector {
      * for the widget must match exactly
      * with the string in your input argument.
      *
-     * @param regular expression
+     * @param regex a regular expression
      * @return UiSelector with the specified search criteria
+     * @since API Level 17
      */
     public UiSelector descriptionMatches(String regex) {
         return buildSelector(SELECTOR_DESCRIPTION_REGEX, regex);
@@ -235,6 +251,7 @@ public class UiSelector {
      *
      * @param desc Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector descriptionStartsWith(String desc) {
         return buildSelector(SELECTOR_START_DESCRIPTION, desc);
@@ -255,6 +272,7 @@ public class UiSelector {
      *
      * @param desc Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector descriptionContains(String desc) {
         return buildSelector(SELECTOR_CONTAINS_DESCRIPTION, desc);
@@ -272,6 +290,7 @@ public class UiSelector {
      *
      * @param index Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector index(final int index) {
         return buildSelector(SELECTOR_INDEX, index);
@@ -297,6 +316,7 @@ public class UiSelector {
      *
      * @param instance Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector instance(final int instance) {
         return buildSelector(SELECTOR_INSTANCE, instance);
@@ -315,6 +335,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector enabled(boolean val) {
         return buildSelector(SELECTOR_ENABLED, val);
@@ -333,6 +354,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector focused(boolean val) {
         return buildSelector(SELECTOR_FOCUSED, val);
@@ -351,6 +373,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector focusable(boolean val) {
         return buildSelector(SELECTOR_FOCUSABLE, val);
@@ -369,6 +392,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector scrollable(boolean val) {
         return buildSelector(SELECTOR_SCROLLABLE, val);
@@ -388,6 +412,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector selected(boolean val) {
         return buildSelector(SELECTOR_SELECTED, val);
@@ -407,6 +432,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector checked(boolean val) {
         return buildSelector(SELECTOR_CHECKED, val);
@@ -425,6 +451,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector clickable(boolean val) {
         return buildSelector(SELECTOR_CLICKABLE, val);
@@ -443,6 +470,7 @@ public class UiSelector {
      *
      * @param val Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 17
      */
     public UiSelector longClickable(boolean val) {
         return buildSelector(SELECTOR_LONG_CLICKABLE, val);
@@ -456,6 +484,7 @@ public class UiSelector {
      *
      * @param selector
      * @return UiSelector with this added search criterion
+     * @since API Level 16
      */
     public UiSelector childSelector(UiSelector selector) {
         return buildSelector(SELECTOR_CHILD, selector);
@@ -478,6 +507,7 @@ public class UiSelector {
      *
      * @param selector
      * @return UiSelector with this added search criterion
+     * @since API Level 16
      */
     public UiSelector fromParent(UiSelector selector) {
         return buildSelector(SELECTOR_PARENT, selector);
@@ -489,6 +519,7 @@ public class UiSelector {
      *
      * @param name Value to match
      * @return UiSelector with the specified search criteria
+     * @since API Level 16
      */
     public UiSelector packageName(String name) {
         return buildSelector(SELECTOR_PACKAGE_NAME, name);
@@ -498,8 +529,9 @@ public class UiSelector {
      * Set the search criteria to match the package name
      * of the application that contains the widget.
      *
-     * @param regular expression
+     * @param regex a regular expression
      * @return UiSelector with the specified search criteria
+     * @since API Level 17
      */
     public UiSelector packageNameMatches(String regex) {
         return buildSelector(SELECTOR_PACKAGE_NAME_REGEX, regex);

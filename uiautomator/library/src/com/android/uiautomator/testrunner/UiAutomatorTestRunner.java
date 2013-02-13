@@ -23,9 +23,11 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.test.RepetitiveTest;
 import android.util.Log;
 
+import com.android.uiautomator.core.Tracer;
 import com.android.uiautomator.core.UiDevice;
 
 import junit.framework.AssertionFailedError;
@@ -103,41 +105,50 @@ public class UiAutomatorTestRunner {
         mUiDevice = UiDevice.getInstance();
         List<TestCase> testCases = collector.getTestCases();
         Bundle testRunOutput = new Bundle();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream writer = new PrintStream(byteArrayOutputStream);
-        try {
-            StringResultPrinter resultPrinter = new StringResultPrinter(writer);
 
-            TestResult testRunResult = new TestResult();
+        String traceType = mParams.getString("traceOutputMode");
+        if(traceType != null) {
+            Tracer.Mode mode = Tracer.Mode.valueOf(Tracer.Mode.class, traceType);
+            if (mode == Tracer.Mode.FILE || mode == Tracer.Mode.ALL) {
+                String filename = mParams.getString("traceLogFilename");
+                if (filename == null) {
+                    throw new RuntimeException("Name of log file not specified. " +
+                            "Please specify it using traceLogFilename parameter");
+                }
+                Tracer.getInstance().setOutputFilename(filename);
+            }
+            Tracer.getInstance().setOutputMode(mode);
+        }
+
+        TestResult testRunResult = new TestResult();
+        ResultReporter resultPrinter;
+        String outputFormat = mParams.getString("outputFormat");
+        if ("simple".equals(outputFormat)) {
+            resultPrinter = new SimpleResultPrinter(System.out, true);
+        } else {
+            resultPrinter = new WatcherResultPrinter(testCases.size());
+        }
+
+        long startTime = SystemClock.uptimeMillis();
+        try {
             // add test listeners
-            testRunResult.addListener(new WatcherResultPrinter(testCases.size()));
             testRunResult.addListener(resultPrinter);
             // add all custom listeners
             for (TestListener listener : mTestListeners) {
                 testRunResult.addListener(listener);
             }
-            long startTime = System.currentTimeMillis();
 
             // run tests for realz!
             for (TestCase testCase : testCases) {
                 prepareTestCase(testCase);
                 testCase.run(testRunResult);
             }
-            long runTime = System.currentTimeMillis() - startTime;
-
-            resultPrinter.print2(testRunResult, runTime);
         } catch (Throwable t) {
             // catch all exceptions so a more verbose error message can be outputted
-            writer.println(String.format("Test run aborted due to unexpected exception: %s",
-                            t.getMessage()));
-            t.printStackTrace(writer);
+            resultPrinter.printUnexpectedError(t);
         } finally {
-            testRunOutput.putString(Instrumentation.REPORT_KEY_STREAMRESULT,
-                    String.format("\nTest results for %s=%s",
-                    getClass().getSimpleName(),
-                    byteArrayOutputStream.toString()));
-            writer.close();
-            mAutomationSupport.sendStatus(Activity.RESULT_OK, testRunOutput);
+            long runTime = SystemClock.uptimeMillis() - startTime;
+            resultPrinter.print(testRunResult, runTime, testRunOutput);
         }
     }
 
@@ -198,8 +209,13 @@ public class UiAutomatorTestRunner {
         }
     }
 
+    private interface ResultReporter extends TestListener {
+        public void print(TestResult result, long runTime, Bundle testOutput);
+        public void printUnexpectedError(Throwable t);
+    }
+
     // Copy & pasted from InstrumentationTestRunner.WatcherResultPrinter
-    private class WatcherResultPrinter implements TestListener {
+    private class WatcherResultPrinter implements ResultReporter {
 
         private static final String REPORT_KEY_NUM_TOTAL = "numtests";
         private static final String REPORT_KEY_NAME_CLASS = "class";
@@ -219,10 +235,18 @@ public class UiAutomatorTestRunner {
         int mTestResultCode = 0;
         String mTestClass = null;
 
+        private SimpleResultPrinter mPrinter;
+        private ByteArrayOutputStream mStream;
+        private PrintStream mWriter;
+
         public WatcherResultPrinter(int numTests) {
             mResultTemplate = new Bundle();
             mResultTemplate.putString(Instrumentation.REPORT_KEY_IDENTIFIER, REPORT_VALUE_ID);
             mResultTemplate.putInt(REPORT_KEY_NUM_TOTAL, numTests);
+
+            mStream = new ByteArrayOutputStream();
+            mWriter = new PrintStream(mStream);
+            mPrinter = new SimpleResultPrinter(mWriter, false);
         }
 
         /**
@@ -263,6 +287,8 @@ public class UiAutomatorTestRunner {
 
             mAutomationSupport.sendStatus(REPORT_VALUE_RESULT_START, mTestResult);
             mTestResultCode = 0;
+
+            mPrinter.startTest(test);
         }
 
         @Override
@@ -273,6 +299,8 @@ public class UiAutomatorTestRunner {
             mTestResult.putString(Instrumentation.REPORT_KEY_STREAMRESULT,
                 String.format("\nError in %s:\n%s",
                     ((TestCase)test).getName(), BaseTestRunner.getFilteredTrace(t)));
+
+            mPrinter.addError(test, t);
         }
 
         @Override
@@ -283,6 +311,8 @@ public class UiAutomatorTestRunner {
             mTestResult.putString(Instrumentation.REPORT_KEY_STREAMRESULT,
                 String.format("\nFailure in %s:\n%s",
                     ((TestCase)test).getName(), BaseTestRunner.getFilteredTrace(t)));
+
+            mPrinter.addFailure(test, t);
         }
 
         @Override
@@ -291,25 +321,67 @@ public class UiAutomatorTestRunner {
                 mTestResult.putString(Instrumentation.REPORT_KEY_STREAMRESULT, ".");
             }
             mAutomationSupport.sendStatus(mTestResultCode, mTestResult);
+
+            mPrinter.endTest(test);
         }
 
+        public void print(TestResult result, long runTime, Bundle testOutput) {
+            mPrinter.print(result, runTime, testOutput);
+            testOutput.putString(Instrumentation.REPORT_KEY_STREAMRESULT,
+                  String.format("\nTest results for %s=%s",
+                  getClass().getSimpleName(),
+                  mStream.toString()));
+            mWriter.close();
+            mAutomationSupport.sendStatus(Activity.RESULT_OK, testOutput);
+        }
+
+        public void printUnexpectedError(Throwable t) {
+            mWriter.println(String.format("Test run aborted due to unexpected exception: %s",
+                    t.getMessage()));
+            t.printStackTrace(mWriter);
+        }
     }
 
-    // copy pasted from InstrumentationTestRunner
-    private class StringResultPrinter extends ResultPrinter {
-
-        public StringResultPrinter(PrintStream writer) {
+    /**
+     * Class that produces the same output as JUnit when running from command line. Can be
+     * used when default UiAutomator output is too verbose.
+     */
+    private class SimpleResultPrinter extends ResultPrinter implements ResultReporter {
+        private boolean mFullOutput;
+        public SimpleResultPrinter(PrintStream writer, boolean fullOutput) {
             super(writer);
+            mFullOutput = fullOutput;
         }
 
-        synchronized void print2(TestResult result, long runTime) {
+        public void print(TestResult result, long runTime, Bundle testOutput) {
             printHeader(runTime);
+            if (mFullOutput) {
+                printErrors(result);
+                printFailures(result);
+            }
             printFooter(result);
+        }
+
+        public void printUnexpectedError(Throwable t) {
+            if (mFullOutput) {
+                getWriter().printf("Test run aborted due to unexpected exeption: %s",
+                        t.getMessage());
+                t.printStackTrace(getWriter());
+            }
         }
     }
 
     protected TestCaseCollector getTestCaseCollector(ClassLoader classLoader) {
-        return new TestCaseCollector(classLoader, new UiAutomatorTestCaseFilter());
+        return new TestCaseCollector(classLoader, getTestCaseFilter());
+    }
+
+    /**
+     * Returns an object which determines if the class and its methods should be
+     * accepted into the test suite.
+     * @return
+     */
+    public UiAutomatorTestCaseFilter getTestCaseFilter() {
+        return new UiAutomatorTestCaseFilter();
     }
 
     protected void addTestListener(TestListener listener) {

@@ -19,10 +19,8 @@ package com.android.uiautomator.core {
     method public int getDisplayWidth();
     method public static com.android.uiautomator.core.UiDevice getInstance();
     method public java.lang.String getLastTraversedText();
-    method public java.lang.String getProductName();
     method public boolean hasAnyWatcherTriggered();
     method public boolean hasWatcherTriggered(java.lang.String);
-    method public boolean isNaturalOrientation();
     method public boolean isScreenOn() throws android.os.RemoteException;
     method public boolean pressBack();
     method public boolean pressDPadCenter();
@@ -42,9 +40,6 @@ package com.android.uiautomator.core {
     method public void removeWatcher(java.lang.String);
     method public void resetWatcherTriggers();
     method public void runWatchers();
-    method public void setOrientationLeft() throws android.os.RemoteException;
-    method public void setOrientationNatural() throws android.os.RemoteException;
-    method public void setOrientationRight() throws android.os.RemoteException;
     method public void sleep() throws android.os.RemoteException;
     method public boolean swipe(int, int, int, int, int);
     method public boolean swipe(android.graphics.Point[], int);
@@ -73,7 +68,6 @@ package com.android.uiautomator.core {
     method public java.lang.String getPackageName() throws com.android.uiautomator.core.UiObjectNotFoundException;
     method public final com.android.uiautomator.core.UiSelector getSelector();
     method public java.lang.String getText() throws com.android.uiautomator.core.UiObjectNotFoundException;
-    method public android.graphics.Rect getVisibleBounds() throws com.android.uiautomator.core.UiObjectNotFoundException;
     method public boolean isCheckable() throws com.android.uiautomator.core.UiObjectNotFoundException;
     method public boolean isChecked() throws com.android.uiautomator.core.UiObjectNotFoundException;
     method public boolean isClickable() throws com.android.uiautomator.core.UiObjectNotFoundException;
@@ -139,7 +133,6 @@ package com.android.uiautomator.core {
     method public com.android.uiautomator.core.UiSelector childSelector(com.android.uiautomator.core.UiSelector);
     method public com.android.uiautomator.core.UiSelector className(java.lang.String);
     method public com.android.uiautomator.core.UiSelector clickable(boolean);
-    method protected com.android.uiautomator.core.UiSelector cloneSelector();
     method public com.android.uiautomator.core.UiSelector description(java.lang.String);
     method public com.android.uiautomator.core.UiSelector descriptionContains(java.lang.String);
     method public com.android.uiautomator.core.UiSelector descriptionStartsWith(java.lang.String);

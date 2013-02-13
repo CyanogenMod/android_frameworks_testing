@@ -27,6 +27,7 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.Trace;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -50,6 +51,7 @@ import java.util.concurrent.TimeoutException;
  * UiDevice provides access to state information about the device.
  * You can also use this class to simulate user actions on the device,
  * such as pressing the d-pad or pressing the Home and Menu buttons.
+ * @since API Level 16
  */
 public class UiDevice {
     private static final String LOG_TAG = UiDevice.class.getSimpleName();
@@ -93,6 +95,7 @@ public class UiDevice {
      * Retrieves a singleton instance of UiDevice
      *
      * @return UiDevice instance
+     * @since API Level 16
      */
     public static UiDevice getInstance() {
         if (mDevice == null) {
@@ -107,8 +110,10 @@ public class UiDevice {
      * The returned display size is adjusted per screen rotation
      *
      * @return a Point containing the display size in dp
+     * @hide
      */
     public Point getDisplaySizeDp() {
+        Tracer.trace();
         Display display = getDefaultDisplay();
         Point p = new Point();
         display.getSize(p);
@@ -124,15 +129,14 @@ public class UiDevice {
     /**
      * Retrieves the product name of the device.
      *
-     * This method provides information on what type of device the
-     * test is running on. If you are trying to test for different types of
-     * UI screen sizes, your test should use
-     * {@link UiDevice#getDisplaySizeDp()} instead. This value is the same
-     * returned by invoking #adb shell getprop ro.product.name.
+     * This method provides information on what type of device the test is running on. This value is
+     * the same as returned by invoking #adb shell getprop ro.product.name.
      *
      * @return product name of the device
+     * @since API Level 17
      */
     public String getProductName() {
+        Tracer.trace();
         return Build.PRODUCT;
     }
 
@@ -149,24 +153,30 @@ public class UiDevice {
      * DOM instead.
      *
      * @return text of the last traversal event, else return an empty string
+     * @since API Level 16
      */
     public String getLastTraversedText() {
+        Tracer.trace();
         return mUiAutomationBridge.getQueryController().getLastTraversedText();
     }
 
     /**
      * Clears the text from the last UI traversal event.
      * See {@link #getLastTraversedText()}.
+     * @since API Level 16
      */
     public void clearLastTraversedText() {
+        Tracer.trace();
         mUiAutomationBridge.getQueryController().clearLastTraversedText();
     }
 
     /**
      * Simulates a short press on the MENU button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressMenu() {
+        Tracer.trace();
         waitForIdle();
         return mUiAutomationBridge.getInteractionController().sendKeyAndWaitForEvent(
                 KeyEvent.KEYCODE_MENU, 0, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
@@ -176,8 +186,10 @@ public class UiDevice {
     /**
      * Simulates a short press on the BACK button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressBack() {
+        Tracer.trace();
         waitForIdle();
         return mUiAutomationBridge.getInteractionController().sendKeyAndWaitForEvent(
                 KeyEvent.KEYCODE_BACK, 0, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
@@ -187,8 +199,10 @@ public class UiDevice {
     /**
      * Simulates a short press on the HOME button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressHome() {
+        Tracer.trace();
         waitForIdle();
         return mUiAutomationBridge.getInteractionController().sendKeyAndWaitForEvent(
                 KeyEvent.KEYCODE_HOME, 0, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
@@ -198,64 +212,80 @@ public class UiDevice {
     /**
      * Simulates a short press on the SEARCH button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressSearch() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_SEARCH);
     }
 
     /**
      * Simulates a short press on the CENTER button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressDPadCenter() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_DPAD_CENTER);
     }
 
     /**
      * Simulates a short press on the DOWN button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressDPadDown() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_DPAD_DOWN);
     }
 
     /**
      * Simulates a short press on the UP button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressDPadUp() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_DPAD_UP);
     }
 
     /**
      * Simulates a short press on the LEFT button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressDPadLeft() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_DPAD_LEFT);
     }
 
     /**
      * Simulates a short press on the RIGHT button.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressDPadRight() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_DPAD_RIGHT);
     }
 
     /**
      * Simulates a short press on the DELETE key.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressDelete() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_DEL);
     }
 
     /**
      * Simulates a short press on the ENTER key.
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressEnter() {
+        Tracer.trace();
         return pressKeyCode(KeyEvent.KEYCODE_ENTER);
     }
 
@@ -264,8 +294,10 @@ public class UiDevice {
      *
      * See {@link KeyEvent}
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressKeyCode(int keyCode) {
+        Tracer.trace(keyCode);
         waitForIdle();
         return mUiAutomationBridge.getInteractionController().sendKey(keyCode, 0);
     }
@@ -277,8 +309,10 @@ public class UiDevice {
      * @param keyCode the key code of the event.
      * @param metaState an integer in which each bit set to 1 represents a pressed meta key
      * @return true if successful, else return false
+     * @since API Level 16
      */
     public boolean pressKeyCode(int keyCode, int metaState) {
+        Tracer.trace(keyCode, metaState);
         waitForIdle();
         return mUiAutomationBridge.getInteractionController().sendKey(keyCode, metaState);
     }
@@ -288,8 +322,10 @@ public class UiDevice {
      *
      * @return true if successful, else return false
      * @throws RemoteException
+     * @since API Level 16
      */
     public boolean pressRecentApps() throws RemoteException {
+        Tracer.trace();
         waitForIdle();
         final IStatusBarService statusBar = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -305,8 +341,10 @@ public class UiDevice {
      * Gets the width of the display, in pixels. The width and height details
      * are reported based on the current orientation of the display.
      * @return width in pixels or zero on failure
+     * @since API Level 16
      */
     public int getDisplayWidth() {
+        Tracer.trace();
         Display display = getDefaultDisplay();
         Point p = new Point();
         display.getSize(p);
@@ -317,8 +355,10 @@ public class UiDevice {
      * Gets the height of the display, in pixels. The size is adjusted based
      * on the current orientation of the display.
      * @return height in pixels or zero on failure
+     * @since API Level 16
      */
     public int getDisplayHeight() {
+        Tracer.trace();
         Display display = getDefaultDisplay();
         Point p = new Point();
         display.getSize(p);
@@ -331,8 +371,10 @@ public class UiDevice {
      * @param x coordinate
      * @param y coordinate
      * @return true if the click succeeded else false
+     * @since API Level 16
      */
     public boolean click(int x, int y) {
+        Tracer.trace(x, y);
         if (x >= getDisplayWidth() || y >= getDisplayHeight()) {
             return (false);
         }
@@ -350,8 +392,10 @@ public class UiDevice {
      * @param endY
      * @param steps is the number of move steps sent to the system
      * @return false if the operation fails or the coordinates are invalid
+     * @since API Level 16
      */
     public boolean swipe(int startX, int startY, int endX, int endY, int steps) {
+        Tracer.trace(startX, startY, endX, endY, steps);
         return mUiAutomationBridge.getInteractionController()
                 .scrollSwipe(startX, startY, endX, endY, steps);
     }
@@ -363,42 +407,52 @@ public class UiDevice {
      * @param segments is Point array containing at least one Point object
      * @param segmentSteps steps to inject between two Points
      * @return true on success
+     * @since API Level 16
      */
     public boolean swipe(Point[] segments, int segmentSteps) {
+        Tracer.trace(segments, segmentSteps);
         return mUiAutomationBridge.getInteractionController().swipe(segments, segmentSteps);
     }
 
     /**
      * Waits for the current application to idle.
      * Default wait timeout is 10 seconds
+     * @since API Level 16
      */
     public void waitForIdle() {
+        Tracer.trace();
         waitForIdle(DEFAULT_TIMEOUT_MILLIS);
     }
 
     /**
      * Waits for the current application to idle.
      * @param timeout in milliseconds
+     * @since API Level 16
      */
-    public void waitForIdle(long time) {
-        mUiAutomationBridge.waitForIdle(time);
+    public void waitForIdle(long timeout) {
+        Tracer.trace(timeout);
+        mUiAutomationBridge.waitForIdle(timeout);
     }
 
     /**
      * Retrieves the last activity to report accessibility events.
      * @deprecated The results returned should be considered unreliable
      * @return String name of activity
+     * @since API Level 16
      */
     @Deprecated
     public String getCurrentActivityName() {
+        Tracer.trace();
         return mUiAutomationBridge.getQueryController().getCurrentActivityName();
     }
 
     /**
      * Retrieves the name of the last package to report accessibility events.
      * @return String name of package
+     * @since API Level 16
      */
     public String getCurrentPackageName() {
+        Tracer.trace();
         return mUiAutomationBridge.getQueryController().getCurrentPackageName();
     }
 
@@ -408,8 +462,10 @@ public class UiDevice {
      *
      * @param name to register the UiWatcher
      * @param watcher {@link UiWatcher}
+     * @since API Level 16
      */
     public void registerWatcher(String name, UiWatcher watcher) {
+        Tracer.trace(name, watcher);
         if (mInWatcherContext) {
             throw new IllegalStateException("Cannot register new watcher from within another");
         }
@@ -421,9 +477,10 @@ public class UiDevice {
      *
      * See {@link #registerWatcher(String, UiWatcher)}
      * @param name used to register the UiWatcher
-     * @throws UiAutomationException
+     * @since API Level 16
      */
     public void removeWatcher(String name) {
+        Tracer.trace(name);
         if (mInWatcherContext) {
             throw new IllegalStateException("Cannot remove a watcher from within another");
         }
@@ -433,8 +490,10 @@ public class UiDevice {
     /**
      * This method forces all registered watchers to run.
      * See {@link #registerWatcher(String, UiWatcher)}
+     * @since API Level 16
      */
     public void runWatchers() {
+        Tracer.trace();
         if (mInWatcherContext) {
             return;
         }
@@ -461,8 +520,10 @@ public class UiDevice {
      * If a UiWatcher runs and its {@link UiWatcher#checkForCondition()} call
      * returned <code>true</code>, then the UiWatcher is considered triggered.
      * See {@link #registerWatcher(String, UiWatcher)}
+     * @since API Level 16
      */
     public void resetWatcherTriggers() {
+        Tracer.trace();
         mWatchersTriggers.clear();
     }
 
@@ -475,8 +536,10 @@ public class UiDevice {
      *
      * @param watcherName
      * @return true if triggered else false
+     * @since API Level 16
      */
     public boolean hasWatcherTriggered(String watcherName) {
+        Tracer.trace(watcherName);
         return mWatchersTriggers.contains(watcherName);
     }
 
@@ -485,8 +548,10 @@ public class UiDevice {
      *
      * See {@link #registerWatcher(String, UiWatcher)}
      * See {@link #hasWatcherTriggered(String)}
+     * @since API Level 16
      */
     public boolean hasAnyWatcherTriggered() {
+        Tracer.trace();
         return mWatchersTriggers.size() > 0;
     }
 
@@ -495,6 +560,7 @@ public class UiDevice {
      * @param watcherName
      */
     private void setWatcherTriggered(String watcherName) {
+        Tracer.trace(watcherName);
         if (!hasWatcherTriggered(watcherName)) {
             mWatchersTriggers.add(watcherName);
         }
@@ -504,8 +570,10 @@ public class UiDevice {
      * Check if the device is in its natural orientation. This is determined by checking if the
      * orientation is at 0 or 180 degrees.
      * @return true if it is in natural orientation
+     * @since API Level 17
      */
     public boolean isNaturalOrientation() {
+        Tracer.trace();
         Display display = getDefaultDisplay();
         return display.getRotation() == Surface.ROTATION_0 ||
                 display.getRotation() == Surface.ROTATION_180;
@@ -513,9 +581,10 @@ public class UiDevice {
 
     /**
      * Returns the current rotation of the display, as defined in {@link Surface}
-     * @return
+     * @since API Level 17
      */
     public int getDisplayRotation() {
+        Tracer.trace();
         return getDefaultDisplay().getRotation();
     }
 
@@ -523,8 +592,10 @@ public class UiDevice {
      * Disables the sensors and freezes the device rotation at its
      * current rotation state.
      * @throws RemoteException
+     * @since API Level 16
      */
     public void freezeRotation() throws RemoteException {
+        Tracer.trace();
         getAutomatorBridge().getInteractionController().freezeRotation();
     }
 
@@ -535,6 +606,7 @@ public class UiDevice {
      * @throws RemoteException
      */
     public void unfreezeRotation() throws RemoteException {
+        Tracer.trace();
         getAutomatorBridge().getInteractionController().unfreezeRotation();
     }
 
@@ -545,8 +617,10 @@ public class UiDevice {
      * If you want to un-freeze the rotation and re-enable the sensors
      * see {@link #unfreezeRotation()}.
      * @throws RemoteException
+     * @since API Level 17
      */
     public void setOrientationLeft() throws RemoteException {
+        Tracer.trace();
         getAutomatorBridge().getInteractionController().setRotationLeft();
     }
 
@@ -557,8 +631,10 @@ public class UiDevice {
      * If you want to un-freeze the rotation and re-enable the sensors
      * see {@link #unfreezeRotation()}.
      * @throws RemoteException
+     * @since API Level 17
      */
     public void setOrientationRight() throws RemoteException {
+        Tracer.trace();
         getAutomatorBridge().getInteractionController().setRotationRight();
     }
 
@@ -569,8 +645,10 @@ public class UiDevice {
      * If you want to un-freeze the rotation and re-enable the sensors
      * see {@link #unfreezeRotation()}.
      * @throws RemoteException
+     * @since API Level 17
      */
     public void setOrientationNatural() throws RemoteException {
+        Tracer.trace();
         getAutomatorBridge().getInteractionController().setRotationNatural();
     }
 
@@ -581,8 +659,10 @@ public class UiDevice {
      * If the screen was OFF and it just got turned ON, this method will insert a 500ms delay
      * to allow the device time to wake up and accept input.
      * @throws RemoteException
+     * @since API Level 16
      */
     public void wakeUp() throws RemoteException {
+        Tracer.trace();
         if(getAutomatorBridge().getInteractionController().wakeDevice()) {
             // sync delay to allow the window manager to start accepting input
             // after the device is awakened.
@@ -595,8 +675,10 @@ public class UiDevice {
      *
      * @return true if the screen is ON else false
      * @throws RemoteException
+     * @since API Level 16
      */
     public boolean isScreenOn() throws RemoteException {
+        Tracer.trace();
         return getAutomatorBridge().getInteractionController().isScreenOn();
     }
 
@@ -605,8 +687,10 @@ public class UiDevice {
      * it does nothing if the screen is already OFF.
      *
      * @throws RemoteException
+     * @since API Level 16
      */
     public void sleep() throws RemoteException {
+        Tracer.trace();
         getAutomatorBridge().getInteractionController().sleepDevice();
     }
 
@@ -615,8 +699,10 @@ public class UiDevice {
      * The file root location is /data/local/tmp
      *
      * @param fileName
+     * @since API Level 16
      */
     public void dumpWindowHierarchy(String fileName) {
+        Tracer.trace(fileName);
         AccessibilityNodeInfo root =
                 getAutomatorBridge().getQueryController().getAccessibilityRootNode();
         if(root != null) {
@@ -638,8 +724,10 @@ public class UiDevice {
      *
      * @return true if a window update occurred, false if timeout has elapsed or if the current
      *         window does not have the specified package name
+     * @since API Level 16
      */
     public boolean waitForWindowUpdate(final String packageName, long timeout) {
+        Tracer.trace(packageName, timeout);
         if (packageName != null) {
             if (!packageName.equals(getCurrentPackageName())) {
                 return false;
@@ -697,9 +785,11 @@ public class UiDevice {
      * The screenshot is adjusted per screen rotation
      *
      * @param storePath where the PNG should be written to
-     * @return
+     * @return true if screen shot is created successfully, false otherwise
+     * @since API Level 17
      */
     public boolean takeScreenshot(File storePath) {
+        Tracer.trace(storePath);
         return takeScreenshot(storePath, 1.0f, 90);
     }
 
@@ -711,9 +801,11 @@ public class UiDevice {
      * @param storePath where the PNG should be written to
      * @param scale scale the screenshot down if needed; 1.0f for original size
      * @param quality quality of the PNG compression; range: 0-100
-     * @return
+     * @return true if screen shot is created successfully, false otherwise
+     * @since API Level 17
      */
     public boolean takeScreenshot(File storePath, float scale, int quality) {
+        Tracer.trace(storePath, scale, quality);
         // This is from com.android.systemui.screenshot.GlobalScreenshot#takeScreenshot
         // We need to orient the screenshot correctly (and the Surface api seems to take screenshots
         // only in the natural orientation of the device :!)
